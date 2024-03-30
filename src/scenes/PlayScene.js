@@ -11,6 +11,7 @@ class PlayScene extends BaseScene {
     this.bird = null;
     this.pipes = null;
     this.isPaused = false;
+    this.isDead = false;
 
     this.pipeHorizontalDistance = 0;
     this.flapVelocity = 300;
@@ -30,7 +31,7 @@ class PlayScene extends BaseScene {
       },
       'hard': {
         pipeHorizontalDistanceRange: [250, 310],
-        pipeVerticalDistanceRange: [50, 100]
+        pipeVerticalDistanceRange: [100, 150]
       }
     }
   }
@@ -47,20 +48,33 @@ class PlayScene extends BaseScene {
     this.listenToEvents();
 
     this.anims.create({
-      key: 'fly',
-      frames: this.anims.generateFrameNumbers('bird', { start: 9, end: 15}),
+      key: 'die',
+      frames: this.anims.generateFrameNumbers('die', { start: 0, end: 3}),
       // 24 fps default, it will play animation consisting of 24 frames in 1 second
       // in case of framerate 2 and sprite of 8 frames animations will play in
       // 4 sec; 8 / 2 = 4
-      frameRate: 8,
+      frameRate: 16,
       // repeat infinitely
       repeat: -1
     })
 
+    this.anims.create({
+      key: 'fly',
+      frames: this.anims.generateFrameNumbers('fly', { start: 0, end: 6}),
+      // 24 fps default, it will play animation consisting of 24 frames in 1 second
+      // in case of framerate 2 and sprite of 8 frames animations will play in
+      // 4 sec; 8 / 2 = 4
+      frameRate: 16,
+      // repeat infinitely
+      repeat: -1
+    })
+
+    
 
     this.bird.play('fly');
   }
 
+  
   update() {
     this.checkGameStatus();
     this.recyclePipes();
@@ -98,11 +112,10 @@ class PlayScene extends BaseScene {
 
   createBird() {
     this.bird = this.physics.add.sprite(this.config.startPosition.x, this.config.startPosition.y, 'bird')
-      .setFlipX(true)
-      .setScale(3)
+      .setScale(1.5)
       .setOrigin(0);
 
-    this.bird.setBodySize(this.bird.width, this.bird.height - 8);
+    this.bird.setBodySize(this.bird.width, this.bird.height-5);
     this.bird.body.gravity.y = 600;
     this.bird.setCollideWorldBounds(true);
   }
@@ -113,6 +126,7 @@ class PlayScene extends BaseScene {
     for (let i = 0; i < PIPES_TO_RENDER; i++) {
       const upperPipe = this.pipes.create(0, 0, 'pipe')
         .setImmovable(true)
+        .setFlipY(true)
         .setOrigin(0, 1);
       const lowerPipe = this.pipes.create(0, 0, 'pipe')
         .setImmovable(true)
@@ -156,7 +170,7 @@ class PlayScene extends BaseScene {
   }
 
   checkGameStatus() {
-    if (this.bird.getBounds().bottom >= this.config.height || this.bird.y <= 0) {
+    if (!this.isDead && (this.bird.getBounds().bottom >= this.config.height || this.bird.y <= 0)) {
       this.gameOver();
     }
   }
@@ -220,6 +234,9 @@ class PlayScene extends BaseScene {
   }
 
   gameOver() {
+    this.isDead = true;
+    console.log("bopa");
+    this.bird.play('die');
     this.physics.pause();
     this.bird.setTint(0xEE4824);
 
@@ -228,6 +245,7 @@ class PlayScene extends BaseScene {
     this.time.addEvent({
       delay: 1000,
       callback: () => {
+        this.isDead = false;
         this.scene.restart();
       },
       loop: false

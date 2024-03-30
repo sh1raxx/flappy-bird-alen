@@ -16,9 +16,14 @@ class MenuScene extends BaseScene {
   create() {
     super.create();
 
+    this.createAuthor();
     this.createMenu(this.menu, this.setupMenuEvents.bind(this));
   }
 
+  createAuthor(){
+    this.add.text(16, this.config.height-30,'Programmed by: Alen Ismagambetov', {fontSize:'16px', fill: '#000'});
+  }
+  
   setupMenuEvents(menuItem) {
     const textGO = menuItem.textGO;
     textGO.setInteractive();
