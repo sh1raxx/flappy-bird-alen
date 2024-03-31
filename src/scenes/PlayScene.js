@@ -31,7 +31,7 @@ class PlayScene extends BaseScene {
       },
       'hard': {
         pipeHorizontalDistanceRange: [250, 310],
-        pipeVerticalDistanceRange: [100, 150]
+        pipeVerticalDistanceRange: [130, 180]
       }
     }
   }
@@ -205,11 +205,11 @@ class PlayScene extends BaseScene {
   }
 
   increaseDifficulty() {
-    if (this.score === 1) {
+    if (this.score === 5) {
       this.currentDifficulty = 'normal';
     }
 
-    if (this.score === 3) {
+    if (this.score === 10) {
       this.currentDifficulty = 'hard';
     }
   }
